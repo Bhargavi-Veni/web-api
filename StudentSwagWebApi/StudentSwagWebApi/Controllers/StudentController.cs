@@ -29,7 +29,7 @@ namespace StudentSwagWebApi.Controllers
                 student.Id = sqlDataReader.GetInt32(0);
                 student.Name = sqlDataReader.GetString(1);
                 student.Gender = sqlDataReader.GetString(2);
-                student.Subject = 0;
+                student.Subject = sqlDataReader.IsDBNull(3) ? 0 : sqlDataReader.GetInt32(3);
                 students.Add(student);
             }
 
@@ -50,26 +50,26 @@ namespace StudentSwagWebApi.Controllers
         }
 
         [HttpPut]
-        public ActionResult UpdateStudent(Student student)
+        public async Task<ActionResult> UpdateStudent(int studentId,Student student)
         {
             SqlConnection dbConnection = new SqlConnection(connection);
             dbConnection.Open();
-            string updateStatement = " update student set name = '" + student.Name + "', gender = '" + student.Gender + "' where id = " + student.Id;
+            string updateStatement = " update student set name = '" + student.Name + "',subject = '" + student.Subject + "', gender = '" + student.Gender + "' where id = " + student.Id;
             SqlCommand dbCommand = new SqlCommand(updateStatement, dbConnection);
-            dbCommand.ExecuteNonQueryAsync();
+            await dbCommand.ExecuteNonQueryAsync();
             dbConnection.Close();
             return Ok();
         }
 
 
         [HttpDelete]
-        public ActionResult DeleteStudent(int studentId)
+        public async Task<ActionResult> DeleteStudent(int studentId)
         {
             SqlConnection dbConnection = new SqlConnection(connection);
             dbConnection.Open();
             string deleteStatement = " delete student where id = " + studentId;
             SqlCommand dbCommand = new SqlCommand(deleteStatement, dbConnection);
-            dbCommand.ExecuteNonQueryAsync();
+            await dbCommand.ExecuteNonQueryAsync();
             dbConnection.Close();
             return Ok();
         }
